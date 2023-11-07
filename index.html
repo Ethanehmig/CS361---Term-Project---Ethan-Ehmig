@@ -1,0 +1,103 @@
+<!-- Author: Ethan Ehmig -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App - Ethan Ehmig</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="card">
+        <div class="search">
+            <input type="text" placeholder="Enter a location" spellcheck="false">
+            <button><img src="images/search.png"></button>
+        </div>
+        <div class="error">
+            <p>Invalid Query</p>
+        </div>
+        <div class="weather">
+            <img src="images/rain.png" class="weather-icon"> 
+            <h1 class="temp">22°c</h1>
+            <h2 class="city">New York</h2>
+            <div class="details">
+                <div class="col">
+                    <img src="images/humidity.png">
+                    <div>
+                        <p class="humidity">50%</p>
+                        <p>Humidity</p>
+                    </div>
+                </div>
+                    <div class="col">
+                        <img src="images/wind.png">
+                        <div>
+                            <p class="wind">15 km/h</p>
+                            <p>Wind Speed</p>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+    
+<script>
+// Display an initial instruction alert
+window.addEventListener("load", () => {
+    alert("Welcome to the Weather App! Enter a location, then click the search button to check the weather.");
+});
+
+
+// API key and URL for OpenWeatherMap API
+const apiKey = "e1dddb3c16ff3b0d64b869d0471fdc38";
+const apiUrl = "https://api.openweathermap.org/data/2.5/weather?units=metric&appid=e1dddb3c16ff3b0d64b869d0471fdc38&q=";
+
+// DOM elements
+const searchBox = document.querySelector(".search input");
+const searchBtn = document.querySelector(".search button");
+const weatherIcon = document.querySelector(".weather-icon");
+
+// Function to check the weather for a given city
+async function checkWeather(city) {
+    const response = await fetch(apiUrl + city);
+
+    // Check if the response status is 404 (not found)
+    if (response.status == 404) {
+        // Display error message and hide weather details
+        document.querySelector(".error").style.display = "block";
+        document.querySelector(".weather").style.display = "none";
+    } else {
+        // Hide error message and display weather details
+        document.querySelector(".error").style.display = "none";
+        var data = await response.json();
+
+        // Update weather details in the DOM
+        document.querySelector(".city").innerHTML = data.name;
+        document.querySelector(".temp").innerHTML = Math.round(data.main.temp) + "°c";
+        document.querySelector(".humidity").innerHTML = data.main.humidity + "%";
+        document.querySelector(".wind").innerHTML = Math.round(data.wind.speed) + " km/h";
+
+        // Set weather icon based on weather condition
+        if (data.weather[0].main == "Clouds") {
+            weatherIcon.src = "images/clouds.png"
+        } else if (data.weather[0].main == "Clear") {
+            weatherIcon.src = "images/clear.png"
+        } else if (data.weather[0].main == "Rain") {
+            weatherIcon.src = "images/rain.png"
+        } else if (data.weather[0].main == "Drizzle") {
+            weatherIcon.src = "images/drizzle.png"
+        } else if (data.weather[0].main == "Mist") {
+            weatherIcon.src = "images/mist.png"
+        }
+
+        // Display weather details
+        document.querySelector(".weather").style.display = "block";
+    }
+}
+
+// Event listener for the search button
+searchBtn.addEventListener("click", () => {
+    // Call the checkWeather function with the value from the search box
+    checkWeather(searchBox.value);
+})
+</script>
+</body>
+</html>
